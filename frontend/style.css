@@ -1,58 +1,64 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e9ecef;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
 }
 
 .hidden {
     display: none !important;
 }
 
-#username-page,
-#chat-page {
-    background: white;
+.form-container,
+.chat-container {
+    background: #fff;
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     width: 400px;
     text-align: center;
 }
 
 ul {
-    list-style-type: none;
-    padding: 0;
-    height: 300px;
+    list-style: none;
+    padding: 10px;
+    height: 350px;
     overflow-y: auto;
-    border: 1px solid #ccc;
-    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f8f9fa;
     text-align: left;
 }
 
 li {
     padding: 8px;
-    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+    background: #e2e3e5;
+    border-radius: 4px;
 }
 
-input[type="text"] {
-    width: calc(100% - 80px);
+input {
+    width: calc(100% - 22px);
     padding: 10px;
+    margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
 button {
+    width: 100%;
     padding: 10px;
-    background-color: #28a745;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #0056b3;
 }

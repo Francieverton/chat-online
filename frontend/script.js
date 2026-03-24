@@ -1,28 +1,47 @@
 'use strict';
 
-var usernamePage = document.querySelector('#username-page');
-var chatPage = document.querySelector('#chat-page');
-var usernameForm = document.querySelector('#usernameForm');
-var messageForm = document.querySelector('#messageForm');
-var messageInput = document.querySelector('#message');
-var messageArea = document.querySelector('#messageArea');
+const authPage = document.querySelector('#auth-page');
+const chatPage = document.querySelector('#chat-page');
+const authForm = document.querySelector('#authForm');
+const messageForm = document.querySelector('#messageForm');
+const messageInput = document.querySelector('#message');
+const messageArea = document.querySelector('#messageArea');
+const errorMessage = document.querySelector('#error-message');
 
-var stompClient = null;
-var username = null;
+let stompClient = null;
+let currentUsername = null;
 
-function connect(event) {
-    username = document.querySelector('#name').value.trim();
-
-    if (username) {
-        usernamePage.classList.add('hidden');
-        chatPage.classList.remove('hidden');
-
-        var socket = new SockJS('/ws');
-        stompClient = Stomp.over(socket);
-
-        stompClient.connect({}, onConnected, onError);
-    }
+function registerAndConnect(event) {
     event.preventDefault();
+    const username = document.querySelector('#username').value.trim();
+    const password = document.querySelector('#password').value.trim();
+
+    fetch('/users', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: username, password: password })
+    })
+        .then(response => {
+            if (response.ok) {
+                currentUsername = username;
+                connectWebSocket();
+            } else {
+                errorMessage.textContent = "Erro ao cadastrar. Tente novamente.";
+                errorMessage.classList.remove('hidden');
+            }
+        })
+        .catch(error => console.error('Erro na requisição:', error));
+}
+
+function connectWebSocket() {
+    authPage.classList.add('hidden');
+    chatPage.classList.remove('hidden');
+
+    const socket = new SockJS('/ws');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, onConnected, onError);
 }
 
 function onConnected() {
@@ -30,35 +49,31 @@ function onConnected() {
 }
 
 function onError(error) {
-    alert('Não foi possível conectar ao servidor WebSocket. Tente novamente.');
+    alert('Erro de conexão com o WebSocket. O servidor está rodando?');
 }
-
 function sendMessage(event) {
-    var messageContent = messageInput.value.trim();
+    event.preventDefault();
+    const messageContent = messageInput.value.trim();
 
     if (messageContent && stompClient) {
-        var chatMessage = {
-            sender: username,
+        const chatMessage = {
+            sender: currentUsername,
             content: messageContent,
             type: 'CHAT'
         };
-
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
-
         messageInput.value = '';
-        event.preventDefault();
     }
-
-    function onMessageReceived(payload) {
-        var message = JSON.parse(payload.body);
-
-        var messageElement = document.createElement('li');
-        messageElement.textContent = message.sender + ": " + message.content;
-
-        messageArea.appendChild(messageElement);
-        messageArea.scrollTop = messageArea.scrollHeight;
-    }
-
-    usernameForm.addEventListener('submit', connect, true);
-    messageForm.addEventListener('submit', sendMessage, true);
 }
+
+// PASSO 4: RECEBER MENSAGEM
+function onMessageReceived(payload) {
+    const message = JSON.parse(payload.body);
+    const messageElement = document.createElement('li');
+    messageElement.textContent = `${message.sender}: ${message.content}`;
+    messageArea.appendChild(messageElement);
+    messageArea.scrollTop = messageArea.scrollHeight;
+}
+
+authForm.addEventListener('submit', registerAndConnect);
+messageForm.addEventListener('submit', sendMessage);
