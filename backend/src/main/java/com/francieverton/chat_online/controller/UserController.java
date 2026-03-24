@@ -2,7 +2,10 @@ package com.francieverton.chat_online.controller;
 
 import com.francieverton.chat_online.entity.UserEntity;
 import com.francieverton.chat_online.repository.UserRepository;
+import jakarta.annotation.Resource;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,5 +31,15 @@ public class UserController {
         String cryptPass = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(cryptPass);
         return userRepository.save(user);
+    }
+
+    @PostMapping("/login")
+    public UserEntity login (@RequestBody UserEntity user){
+        UserEntity userBank = userRepository.findByuserName(user.getUserName());
+
+        if (userBank == null){
+            throw new RuntimeException("Usuário não encontrado");
+        }
+        return user;
     }
 }
