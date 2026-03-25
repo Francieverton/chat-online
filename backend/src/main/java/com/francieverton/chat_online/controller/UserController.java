@@ -35,11 +35,17 @@ public class UserController {
 
     @PostMapping("/login")
     public UserEntity login (@RequestBody UserEntity user){
-        UserEntity userBank = userRepository.findByuserName(user.getUserName());
+        UserEntity userBank = userRepository.findByUserName(user.getUserName());
 
         if (userBank == null){
             throw new RuntimeException("Usuário não encontrado");
         }
-        return user;
+        boolean equalPassword = bCryptPasswordEncoder.matches(user.getPassword(), userBank.getPassword());
+
+        if (!equalPassword){
+            throw new RuntimeException("Senha não compatível");
+        }
+
+        return userBank;
     }
 }

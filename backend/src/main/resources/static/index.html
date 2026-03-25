@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Online - Spring Boot</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="auth-page">
+    <div class="form-container">
+        <h2>Cadastro no Chat</h2>
+        <form id="authForm">
+            <input type="text" id="username" placeholder="Digite seu nome..." required />
+            <input type="password" id="password" placeholder="Digite sua senha..." required />
+            <button type="submit">Cadastrar e Entrar</button>
+        </form>
+        <p id="error-message" class="hidden" style="color: red;"></p>
+    </div>
+</div>
+
+<div id="chat-page" class="hidden">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Sala Pública</h2>
+        </div>
+        <ul id="messageArea"></ul>
+        <form id="messageForm">
+            <input type="text" id="message" placeholder="Escreva sua mensagem..." autocomplete="off" required />
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="script.js"></script>
+</body>
+
+</html>

@@ -19,9 +19,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // ADICIONE ESTA LINHA
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index.html", "/script.js", "/style.css").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
