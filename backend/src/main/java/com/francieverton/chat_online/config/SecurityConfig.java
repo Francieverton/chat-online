@@ -20,7 +20,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // ADICIONE ESTA LINHA
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index.html", "/script.js", "/style.css").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()

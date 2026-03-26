@@ -2,10 +2,7 @@ package com.francieverton.chat_online.controller;
 
 import com.francieverton.chat_online.entity.UserEntity;
 import com.francieverton.chat_online.repository.UserRepository;
-import jakarta.annotation.Resource;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
