@@ -96,6 +96,9 @@ function onMessageReceived(payload) {
         messageElement.textContent = `${message.sender} saiu da sala. 🚪`;
 
     } else {
+        if (message.sender === currentUsername) {
+            messageElement.classList.add('own');
+        }
         messageElement.textContent = `${message.sender}: ${message.content}`;
     }
 

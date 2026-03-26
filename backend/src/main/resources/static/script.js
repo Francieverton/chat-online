@@ -23,28 +23,28 @@ function registerAndConnect(event) {
         headers: { 'Content-Type': 'application/json' },
         body: userData
     })
-    .then(response => {
-        if (response.ok) {
-            currentUsername = username;
-            connectWebSocket();
-        } else {
-            fetch('/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: userData
-            })
-            .then(res => {
-                if (res.ok) {
-                    currentUsername = username;
-                    connectWebSocket();
-                } else {
-                    errorMessage.textContent = "Senha incorreta ou erro no servidor.";
-                    errorMessage.classList.remove('hidden');
-                }
-            });
-        }
-    })
-    .catch(error => console.error('Erro na requisição:', error));
+        .then(response => {
+            if (response.ok) {
+                currentUsername = username;
+                connectWebSocket();
+            } else {
+                fetch('/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: userData
+                })
+                    .then(res => {
+                        if (res.ok) {
+                            currentUsername = username;
+                            connectWebSocket();
+                        } else {
+                            errorMessage.textContent = "Senha incorreta ou erro no servidor.";
+                            errorMessage.classList.remove('hidden');
+                        }
+                    });
+            }
+        })
+        .catch(error => console.error('Erro na requisição:', error));
 }
 function connectWebSocket() {
     authPage.classList.add('hidden');
@@ -59,7 +59,7 @@ function onConnected() {
     stompClient.subscribe('/topic/public', onMessageReceived);
     stompClient.send("/app/chat.addUser",
         {},
-        JSON.stringify({sender: currentUsername, type: 'JOIN'})
+        JSON.stringify({ sender: currentUsername, type: 'JOIN' })
     );
 }
 
@@ -85,7 +85,7 @@ function onMessageReceived(payload) {
     const message = JSON.parse(payload.body);
     const messageElement = document.createElement('li');
 
-    if(message.type === 'JOIN') {
+    if (message.type === 'JOIN') {
         messageElement.style.color = 'green';
         messageElement.style.fontStyle = 'italic';
         messageElement.textContent = `${message.sender} entrou na sala! 👋`;
@@ -96,6 +96,9 @@ function onMessageReceived(payload) {
         messageElement.textContent = `${message.sender} saiu da sala. 🚪`;
 
     } else {
+        if (message.sender === currentUsername) {
+            messageElement.classList.add('own');
+        }
         messageElement.textContent = `${message.sender}: ${message.content}`;
     }
 
