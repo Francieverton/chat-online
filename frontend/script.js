@@ -16,25 +16,36 @@ function registerAndConnect(event) {
     const username = document.querySelector('#username').value.trim();
     const password = document.querySelector('#password').value.trim();
 
-    fetch('/users', {
+    const userData = JSON.stringify({ userName: username, password: password });
+
+    fetch('/login', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userName: username, password: password })
+        headers: { 'Content-Type': 'application/json' },
+        body: userData
     })
         .then(response => {
             if (response.ok) {
                 currentUsername = username;
                 connectWebSocket();
             } else {
-                errorMessage.textContent = "Erro ao cadastrar. Tente novamente.";
-                errorMessage.classList.remove('hidden');
+                fetch('/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: userData
+                })
+                    .then(res => {
+                        if (res.ok) {
+                            currentUsername = username;
+                            connectWebSocket();
+                        } else {
+                            errorMessage.textContent = "Senha incorreta ou erro no servidor.";
+                            errorMessage.classList.remove('hidden');
+                        }
+                    });
             }
         })
         .catch(error => console.error('Erro na requisição:', error));
 }
-
 function connectWebSocket() {
     authPage.classList.add('hidden');
     chatPage.classList.remove('hidden');
@@ -46,6 +57,10 @@ function connectWebSocket() {
 
 function onConnected() {
     stompClient.subscribe('/topic/public', onMessageReceived);
+    stompClient.send("/app/chat.addUser",
+        {},
+        JSON.stringify({ sender: currentUsername, type: 'JOIN' })
+    );
 }
 
 function onError(error) {
@@ -69,7 +84,21 @@ function sendMessage(event) {
 function onMessageReceived(payload) {
     const message = JSON.parse(payload.body);
     const messageElement = document.createElement('li');
-    messageElement.textContent = `${message.sender}: ${message.content}`;
+
+    if (message.type === 'JOIN') {
+        messageElement.style.color = 'green';
+        messageElement.style.fontStyle = 'italic';
+        messageElement.textContent = `${message.sender} entrou na sala! 👋`;
+
+    } else if (message.type === 'LEAVE') {
+        messageElement.style.color = 'red';
+        messageElement.style.fontStyle = 'italic';
+        messageElement.textContent = `${message.sender} saiu da sala. 🚪`;
+
+    } else {
+        messageElement.textContent = `${message.sender}: ${message.content}`;
+    }
+
     messageArea.appendChild(messageElement);
     messageArea.scrollTop = messageArea.scrollHeight;
 }
